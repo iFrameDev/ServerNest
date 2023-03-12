@@ -2,7 +2,7 @@ import { Injectable} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
-
+import { BadRequestException } from '@nestjs/common';
 
 
 @Injectable()
@@ -35,10 +35,10 @@ export class UserService {
                 const res = await this.userModel.create(user)
                 return res;
             }
-            throw new Error('email already exists');
+            throw new BadRequestException('email already exists');
         }
         
-        throw new Error('Username already exists');
+        throw new BadRequestException('Username already exists');
 
     }
     async Delete(id:string): Promise<User>{
