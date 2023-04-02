@@ -5,9 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost/SocialLifeWebApp'),UserModule, AuthModule, MailModule],
+  imports: [ConfigModule.forRoot(), MongooseModule.forRoot('mongodb://localhost/SocialLifeWebApp'),UserModule, AuthModule, MailModule ],
   controllers: [AppController],
   providers: [AppService]
 

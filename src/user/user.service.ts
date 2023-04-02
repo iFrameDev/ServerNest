@@ -3,6 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { BadRequestException } from '@nestjs/common';
+import { MailService } from '../mail/mail.service'
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
@@ -11,7 +14,9 @@ export class UserService {
     constructor(
         
         @InjectModel(User.name)
-        private userModel: Model<UserDocument>
+        private userModel: Model<UserDocument>,
+        private mailService: MailService,
+        private configService:ConfigService 
 
     ){}
 
@@ -31,18 +36,42 @@ export class UserService {
 
     async Create(user: User): Promise<User>{
 
-        const username = await this.userModel.findOne({username: user.username})
-        if(!username){
+        try{
+                const username = await this.userModel.findOne({username: user.username})
 
-            const email = await this.userModel.findOne({email: user.email})
-            if(!email){
-                const res = await this.userModel.create(user)
-                return res;
-            }
-            throw new BadRequestException('email already exists');
+                if(!username){
+
+                    const email = await this.userModel.findOne({email: user.email})
+                    if(!email){
+
+                        const saltOrRounds = 10;
+                        const hash = await bcrypt.hash(user.password, saltOrRounds);
+                        user.password = hash;
+                        const res = await this.userModel.create(user)
+                        const html = '<p>test</p>'
+
+                        await this.mailService.SendMail({
+                            to: user.email,
+                            from: this.configService.get<string>('SENDGRID_FROM_MAIL'),
+                            subject:'confirm email',
+                            text:'test',
+                            html:html                            
+                        })
+
+                        return res;
+                    }
+                    throw new BadRequestException('email already exists');
+                }
+                
+                throw new BadRequestException('Username already exists');
+
         }
+        catch(e){
+
+            console.log(e);
+        }
+
         
-        throw new BadRequestException('Username already exists');
 
     }
     async Delete(id:string): Promise<User>{
