@@ -34,10 +34,12 @@ export class AuthService {
         }
         throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
     }
+
+    
     async login(user: any) {
-        const payload = { username: user.username, sub: user._Id };
-        return {
-          access_token: this.jwtService.sign(payload),
+        const payload = { username: user.username, sub: user._id };
+        return {                
+          access_token: this.jwtService.sign(payload)
         };
       }
 

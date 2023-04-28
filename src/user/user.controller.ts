@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { User } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from '../mail/mail.service';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('user')

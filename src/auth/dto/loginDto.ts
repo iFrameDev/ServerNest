@@ -8,10 +8,11 @@ export class LoginDTO {
     @IsString()
     username:string;
 
+
     @IsNotEmpty()
     @IsString()
     password:string;
     
 
 
-}
+} 
